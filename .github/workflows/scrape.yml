@@ -22,10 +22,13 @@ jobs:
       - name: Run Scraper
         run: node scrapper.js
 
-      - name: Append Data to File
+      - name: Run Scraper and Capture Output
+        id: scraper
         run: |
-          # Store the scraped data in a variable
           scraped_data=$(node scrapper.js)
+          echo "::set-output name=data::$scraped_data"
+        continue-on-error: true  # This allows the workflow to continue even if the script fails
 
-          # Append the data to the existing file
-          echo "$scraped_data" >> scraped_data.txt
+      - name: Append Successful Data to File
+        if: steps.scraper.outcome == 'success'  # Only run this step if the scraper step was successful
+        run: echo "${{ steps.scraper.outputs.data }}" >> scraped_data.txt
