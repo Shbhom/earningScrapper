@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 
 (async () => {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
 
     await page.goto('https://trendlyne.com/conference-calls/');
@@ -15,7 +15,6 @@ import puppeteer from "puppeteer";
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         today = new Intl.DateTimeFormat('en-US', options).format(today);
 
-        today = 'Aug 19, 2023';
 
         const postdates = [];
 
@@ -43,9 +42,9 @@ import puppeteer from "puppeteer";
         scrapedData += `${pdfLinks.links[i]}\n`
     }
 
-    console.log(scrapedData)
 
     await browser.close();
+    console.log(scrapedData)
 })();
 
 async function autoScroll(page) {
