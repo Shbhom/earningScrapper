@@ -1,0 +1,31 @@
+name: Hourly Web Scraper
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs every hour
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # Choose the appropriate Node.js version
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Scraper
+        run: node scrapper.js
+
+      - name: Append Data to File
+        run: |
+          # Store the scraped data in a variable
+          scraped_data=$(node scrapper.js)
+
+          # Append the data to the existing file
+          echo "$scraped_data" >> scraped_data.txt
