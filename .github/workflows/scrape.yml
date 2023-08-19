@@ -31,4 +31,4 @@ jobs:
 
       - name: Append Successful Data to File
         if: steps.scraper.outcome == 'success'  # Only run this step if the scraper step was successful
-        run: echo "${{ steps.scraper.outputs.data }}" >> scraped_data.txt
+        run: echo "${{ steps.scraper.outputs.data }}" > scraped_data.txt
