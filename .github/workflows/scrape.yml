@@ -27,7 +27,6 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git remote add origin https://github.com/Shbhom/earningScrapper.git
           git add scraped_data.txt
           git commit -m "Update scraped data [skip ci]"
           git push https://Shbhom:${{ secrets.PAT_TOKEN }}@github.com/Shbhom/earningScrapper.git HEAD:main
