@@ -1,9 +1,10 @@
 import puppeteer from "puppeteer";
 import fs from "fs/promises"
 import path from "path";
+import { exec } from "child_process"
 
 (async () => {
-    const browser = await puppeteer.launch({ headless: "new" });
+    const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
 
     page.on('console', consoleMessage => {
@@ -30,7 +31,6 @@ import path from "path";
             const month = dateParts[1];
             const year = dateParts[2].replace(',', '');
             const formattedDate = `${month} ${day}, ${year}`;
-            // console.log(formattedDate);
 
             if (formattedDate === today) {
                 const pdfLink = post.querySelector('.pdf-pill-link').getAttribute('href');
@@ -40,7 +40,7 @@ import path from "path";
             }
         });
 
-        let pdfNames = [];
+        let Names = [];
 
         posts.forEach(post => {
             const postDateText = post.querySelector('.post-head-subtext span:first-child').textContent.trim();
@@ -53,19 +53,82 @@ import path from "path";
             if (formattedDate === today) {
                 let pdfName = post.querySelector('.post-head-text a').textContent
                 pdfName = pdfName.replace(/\s/g, '_')
-                pdfNames.push(pdfName)
+                Names.push(pdfName)
             }
         })
 
-        return { links, pdfNames };
+        return { links, Names };
     });
 
-    let scrapedData = ''
+    const newPage = await browser.newPage()
     for (let i = 0; i < pdfData.links.length; i++) {
-        scrapedData += `${pdfData.links[i]} : ${pdfData.pdfNames[i]}\n`
+        let pdfUrl = pdfData.links[i]
+        if (pdfUrl === 'null') {
+            continue;
+        }
+        await newPage.goto(pdfUrl)
+
+        if (i == 0) {
+            await newPage.waitForSelector('#id_login')
+            await newPage.type('#id_login', "haite.ku4897@gmail.com")
+            await newPage.type('#id_password', "trendlyne")
+            await newPage.click(".login-btn")
+        }
+        let url = newPage.url()
+
+        let pdfName = ''
+        pdfName = pdfData.Names[i].replace('&', 'and')
+
+        if (!pdfName.endsWith('.')) {
+            pdfName += '.'
+        }
+
+        let pdfPath = path.resolve(`./pdfs/${pdfName}pdf`)
+        console.log(pdfPath)
+
+        const curlCommand = `curl ${url} -o ${pdfPath}`;
+
+        exec(curlCommand, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Error: ${error.message}`);
+                return;
+            }
+
+            if (stderr) {
+                console.error(`stderr: ${stderr}`);
+                return;
+            }
+
+            console.log(`curl command output:\n${stdout}`);
+        });
+        // https.get(url, response => {
+        //     let pdfData = '';
+
+        //     response.on('data', chunk => {
+        //         pdfData += chunk;
+        //     });
+        //     console.log(pdfData);
+
+        //     response.on('end', async () => {
+        //         try {
+        //             const command = new PutObjectCommand({
+        //                 ContentType: 'application/pdf',
+        //                 Bucket: 'pdfscrapper.bucket',
+        //                 Body: pdfData,
+        //                 Key: `${pdfName}pdf`
+        //             });
+
+        //             await s3.send(command);
+        //             console.log('File uploaded successfully');
+        //         } catch (error) {
+        //             console.error('Error uploading file:', error);
+        //         }
+        //     });
+        // });
     }
+
     await browser.close();
-    await fs.writeFile('./scraped_data.txt', scrapedData).then(() => { console.log(`data written to scraped_data.txt`) })
+
 })();
 
 async function autoScroll(page) {

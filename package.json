@@ -5,18 +5,13 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "ts-node ./scrapper.ts"
+    "dev": "node scrapper.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^20.5.1",
-    "@types/puppeteer": "^7.0.4",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
-  },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.395.0",
     "puppeteer": "^21.1.0"
   }
 }
