@@ -21,7 +21,7 @@ import { exec } from "child_process"
         let today = new Date();
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         today = new Intl.DateTimeFormat('en-US', options).format(today);
-        today = 'Aug 21, 2023'
+        // today = 'Aug 21, 2023'
 
 
         posts.forEach(post => {
