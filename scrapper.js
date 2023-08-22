@@ -1,10 +1,9 @@
 import puppeteer from "puppeteer";
-import fs from "fs/promises"
 import path from "path";
 import { exec } from "child_process"
 
 (async () => {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
 
     page.on('console', consoleMessage => {
